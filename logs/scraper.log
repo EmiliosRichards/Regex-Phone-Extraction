@@ -1,0 +1,148 @@
+2025-05-09 21:00:27,958 - INFO - Logging configured with level: INFO
+2025-05-09 21:00:27,959 - INFO - Initialized run directory: C:\Users\Emilios Richards\VSCode\Regex Phone Extraction\data\scraping\20250509_210027
+2025-05-09 21:00:27,960 - INFO - Created new run directory: C:\Users\Emilios Richards\VSCode\Regex Phone Extraction\data\scraping\20250509_210027
+2025-05-09 21:00:27,962 - INFO - [TEXT] Processing URLs from file: test_urls.txt
+2025-05-09 21:00:27,962 - INFO - [OK] Scraping http://www.zyschka.de in mode: text
+2025-05-09 21:00:34,493 - INFO - Saving OCR results for http://www.zyschka.de (0 images)
+2025-05-09 21:00:34,494 - INFO - Saved OCR summary to C:\Users\Emilios Richards\VSCode\Regex Phone Extraction\data\scraping\20250509_210027\pages\zyschka_de\ocr\summary.json
+2025-05-09 21:00:34,494 - INFO - Total OCR text length: 0 characters
+2025-05-09 21:00:34,496 - INFO - Total OCR word count: 0 words
+2025-05-09 21:00:34,497 - INFO - 
+[STATS] Performance Metrics:
+2025-05-09 21:00:34,498 - INFO - Total scraping time: 6.53s
+2025-05-09 21:00:34,498 - INFO - Browser initialization: 0.00s
+2025-05-09 21:00:34,499 - INFO - Page loading: 4.76s
+2025-05-09 21:00:34,500 - INFO - Content extraction: 0.04s
+2025-05-09 21:00:34,500 - INFO - Image processing: 0.00s
+2025-05-09 21:00:34,501 - INFO -   • Total images: 0
+2025-05-09 21:00:34,501 - INFO -   • Successful: 0
+2025-05-09 21:00:34,502 - INFO -   • Failed: 0
+2025-05-09 21:00:34,503 - INFO - File saving: 0.01s
+2025-05-09 21:00:34,618 - INFO - [OK] Scraping http://www.zyliss.com in mode: text
+2025-05-09 21:01:11,469 - WARNING - Timeout waiting for network idle on http://www.zyliss.com, continuing anyway
+2025-05-09 21:01:11,535 - INFO - Saving OCR results for http://www.zyliss.com (0 images)
+2025-05-09 21:01:11,536 - INFO - Saved OCR summary to C:\Users\Emilios Richards\VSCode\Regex Phone Extraction\data\scraping\20250509_210027\pages\zyliss_com\ocr\summary.json
+2025-05-09 21:01:11,537 - INFO - Total OCR text length: 0 characters
+2025-05-09 21:01:11,539 - INFO - Total OCR word count: 0 words
+2025-05-09 21:01:11,539 - INFO - 
+[STATS] Performance Metrics:
+2025-05-09 21:01:11,540 - INFO - Total scraping time: 36.92s
+2025-05-09 21:01:11,540 - INFO - Browser initialization: 0.00s
+2025-05-09 21:01:11,541 - INFO - Page loading: 36.06s
+2025-05-09 21:01:11,541 - INFO - Content extraction: 0.06s
+2025-05-09 21:01:11,542 - INFO - Image processing: 0.00s
+2025-05-09 21:01:11,542 - INFO -   • Total images: 0
+2025-05-09 21:01:11,543 - INFO -   • Successful: 0
+2025-05-09 21:01:11,544 - INFO -   • Failed: 0
+2025-05-09 21:01:11,544 - INFO - File saving: 0.01s
+2025-05-09 21:01:11,659 - INFO - [OK] Scraping http://www.zwt-zisterer.de in mode: text
+2025-05-09 21:01:14,845 - INFO - Saving OCR results for http://www.zwt-zisterer.de (0 images)
+2025-05-09 21:01:14,847 - INFO - Saved OCR summary to C:\Users\Emilios Richards\VSCode\Regex Phone Extraction\data\scraping\20250509_210027\pages\zwt-zisterer_de\ocr\summary.json
+2025-05-09 21:01:14,847 - INFO - Total OCR text length: 0 characters
+2025-05-09 21:01:14,849 - INFO - Total OCR word count: 0 words
+2025-05-09 21:01:14,849 - INFO - 
+[STATS] Performance Metrics:
+2025-05-09 21:01:14,850 - INFO - Total scraping time: 3.19s
+2025-05-09 21:01:14,852 - INFO - Browser initialization: 0.00s
+2025-05-09 21:01:14,852 - INFO - Page loading: 2.12s
+2025-05-09 21:01:14,853 - INFO - Content extraction: 0.04s
+2025-05-09 21:01:14,854 - INFO - Image processing: 0.00s
+2025-05-09 21:01:14,855 - INFO -   • Total images: 0
+2025-05-09 21:01:14,855 - INFO -   • Successful: 0
+2025-05-09 21:01:14,856 - INFO -   • Failed: 0
+2025-05-09 21:01:14,857 - INFO - File saving: 0.01s
+2025-05-09 21:01:14,952 - INFO - [OK] Scraping http://www.zwilling.com in mode: text
+2025-05-09 21:01:17,907 - INFO - Saving OCR results for http://www.zwilling.com (0 images)
+2025-05-09 21:01:17,908 - INFO - Saved OCR summary to C:\Users\Emilios Richards\VSCode\Regex Phone Extraction\data\scraping\20250509_210027\pages\zwilling_com\ocr\summary.json
+2025-05-09 21:01:17,909 - INFO - Total OCR text length: 0 characters
+2025-05-09 21:01:17,911 - INFO - Total OCR word count: 0 words
+2025-05-09 21:01:17,911 - INFO - 
+[STATS] Performance Metrics:
+2025-05-09 21:01:17,912 - INFO - Total scraping time: 2.96s
+2025-05-09 21:01:17,913 - INFO - Browser initialization: 0.00s
+2025-05-09 21:01:17,914 - INFO - Page loading: 2.11s
+2025-05-09 21:01:17,915 - INFO - Content extraction: 0.04s
+2025-05-09 21:01:17,915 - INFO - Image processing: 0.00s
+2025-05-09 21:01:17,916 - INFO -   • Total images: 0
+2025-05-09 21:01:17,917 - INFO -   • Successful: 0
+2025-05-09 21:01:17,918 - INFO -   • Failed: 0
+2025-05-09 21:01:17,918 - INFO - File saving: 0.01s
+2025-05-09 21:01:18,002 - INFO - [OK] Scraping http://www.zwieg.de in mode: text
+2025-05-09 21:01:20,461 - INFO - Saving OCR results for http://www.zwieg.de (0 images)
+2025-05-09 21:01:20,462 - INFO - Saved OCR summary to C:\Users\Emilios Richards\VSCode\Regex Phone Extraction\data\scraping\20250509_210027\pages\zwieg_de\ocr\summary.json
+2025-05-09 21:01:20,463 - INFO - Total OCR text length: 0 characters
+2025-05-09 21:01:20,465 - INFO - Total OCR word count: 0 words
+2025-05-09 21:01:20,466 - INFO - 
+[STATS] Performance Metrics:
+2025-05-09 21:01:20,466 - INFO - Total scraping time: 2.46s
+2025-05-09 21:01:20,467 - INFO - Browser initialization: 0.00s
+2025-05-09 21:01:20,468 - INFO - Page loading: 1.65s
+2025-05-09 21:01:20,469 - INFO - Content extraction: 0.04s
+2025-05-09 21:01:20,470 - INFO - Image processing: 0.00s
+2025-05-09 21:01:20,470 - INFO -   • Total images: 0
+2025-05-09 21:01:20,471 - INFO -   • Successful: 0
+2025-05-09 21:01:20,472 - INFO -   • Failed: 0
+2025-05-09 21:01:20,473 - INFO - File saving: 0.01s
+2025-05-09 21:01:20,575 - INFO - [OK] Scraping http://www.zwicky.swiss in mode: text
+2025-05-09 21:01:26,477 - INFO - Saving OCR results for http://www.zwicky.swiss (0 images)
+2025-05-09 21:01:26,479 - INFO - Saved OCR summary to C:\Users\Emilios Richards\VSCode\Regex Phone Extraction\data\scraping\20250509_210027\pages\zwicky_swiss\ocr\summary.json
+2025-05-09 21:01:26,479 - INFO - Total OCR text length: 0 characters
+2025-05-09 21:01:26,481 - INFO - Total OCR word count: 0 words
+2025-05-09 21:01:26,482 - INFO - 
+[STATS] Performance Metrics:
+2025-05-09 21:01:26,483 - INFO - Total scraping time: 5.90s
+2025-05-09 21:01:26,484 - INFO - Browser initialization: 0.00s
+2025-05-09 21:01:26,485 - INFO - Page loading: 5.07s
+2025-05-09 21:01:26,485 - INFO - Content extraction: 0.05s
+2025-05-09 21:01:26,486 - INFO - Image processing: 0.00s
+2025-05-09 21:01:26,487 - INFO -   • Total images: 0
+2025-05-09 21:01:26,487 - INFO -   • Successful: 0
+2025-05-09 21:01:26,488 - INFO -   • Failed: 0
+2025-05-09 21:01:26,489 - INFO - File saving: 0.01s
+2025-05-09 21:01:26,582 - INFO - 
+
+[SESSION SUMMARY] Overall Scraping Session Results:
+2025-05-09 21:01:26,582 - INFO - Session Duration: 58.62 seconds
+2025-05-09 21:01:26,584 - INFO - 
+[URLS] Processing Statistics:
+2025-05-09 21:01:26,586 - INFO - • Total URLs processed: 6
+2025-05-09 21:01:26,586 - INFO - • Successful: 6
+2025-05-09 21:01:26,587 - INFO - • Failed: 0
+2025-05-09 21:01:26,588 - INFO - 
+[OCR] Overall OCR Statistics:
+2025-05-09 21:01:26,588 - INFO - • Total OCR attempts: 0
+2025-05-09 21:01:26,589 - INFO - • Total OCR successes: 0
+2025-05-09 21:01:26,590 - INFO - • Average OCR success rate: 0.00%
+2025-05-09 21:01:26,590 - INFO - 
+[PERFORMANCE] Processing Performance:
+2025-05-09 21:01:26,591 - INFO - • Total processing time: 58.61 seconds
+2025-05-09 21:01:26,592 - INFO - • Average time per URL: 9.77 seconds
+2025-05-09 21:01:26,592 - INFO - 
+[STATS] Session JSON Summary:
+2025-05-09 21:01:26,593 - INFO - {
+  "session_duration": {
+    "start": "2025-05-09T21:00:27.961617",
+    "end": "2025-05-09T21:01:26.582309",
+    "total_seconds": 58.620692
+  },
+  "urls_processed": {
+    "total": 6,
+    "successful": 6,
+    "failed": 0
+  },
+  "ocr_metrics": {
+    "total_attempts": 0,
+    "total_successes": 0,
+    "average_success_rate": 0.0
+  },
+  "performance": {
+    "total_processing_time": 58.61,
+    "average_time_per_url": 9.77
+  }
+}
+2025-05-09 21:01:26,595 - INFO - 
+[LOG] Session log written to: C:\Users\Emilios Richards\VSCode\Regex Phone Extraction\data\scraping\20250509_210027\session.log
+2025-05-09 21:01:26,597 - INFO - 
+[LOG] Session summary added to history log: C:\Users\Emilios Richards\VSCode\Regex Phone Extraction\logs\scrape_history.log
+2025-05-09 21:01:26,600 - INFO - 
+[SUMMARY] Run summary written to: C:\Users\Emilios Richards\VSCode\Regex Phone Extraction\data\scraping\20250509_210027\summary.json

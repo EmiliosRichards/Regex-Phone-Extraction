@@ -1,0 +1,11 @@
+{
+  "url": "http://www.zoodi.net",
+  "hostname": "zoodi_net",
+  "timestamp": "2025-05-09T18:49:09.712986",
+  "text": "Warning: Unknown: Cannot call session save handler in a recursive manner in Unknown on line 0 Warning: Unknown: Failed to write session data using user defined save handler. (session.save_path: ) in Unknown on line 0",
+  "text_length": 216,
+  "word_count": 35,
+  "ocr_results_count": 0,
+  "images_dir": "C:\\Users\\Emilios Richards\\VSCode\\Regex Phone Extraction - Copy\\data\\scraping\\20250509_214446\\images\\zoodi_net",
+  "failed_images": []
+}
