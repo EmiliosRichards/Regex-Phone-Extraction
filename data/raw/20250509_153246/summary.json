@@ -1,0 +1,74 @@
+{
+  "run_info": {
+    "timestamp": "2025-05-09T15:33:29.033689",
+    "run_directory": "C:\\Users\\EmiliosRichards\\Projects\\LLM Phone Extraction - Regex Variation\\data\\scraping\\20250509_153246",
+    "command_line": "C:\\Users\\EmiliosRichards\\Projects\\LLM Phone Extraction - Regex Variation\\scraper\\main.py --url-file test_urls.txt --scrape-mode text",
+    "python_version": "3.13.3 (tags/v3.13.3:6280bb5, Apr  8 2025, 14:47:33) [MSC v.1943 64 bit (AMD64)]",
+    "platform": "win32"
+  },
+  "session_metrics": {
+    "session_duration": {
+      "start": "2025-05-09T15:32:46.241169",
+      "end": "2025-05-09T15:33:29.033666",
+      "total_seconds": 42.792497
+    },
+    "urls_processed": {
+      "total": 6,
+      "successful": 6,
+      "failed": 0
+    },
+    "ocr_metrics": {
+      "total_attempts": 0,
+      "total_successes": 0,
+      "average_success_rate": 0.0
+    },
+    "performance": {
+      "total_processing_time": 42.78,
+      "average_time_per_url": 7.13
+    },
+    "warnings": {
+      "total": 0,
+      "by_type": {},
+      "details": []
+    },
+    "network_issues": {
+      "total": 2,
+      "by_type": {
+        "Unknown": 2
+      },
+      "details": [
+        {
+          "url": "http://www.zyliss.com",
+          "message": "HTTP 403 for https://sapi.negate.io/script/HMgBooIKMmqVfbeQiKRIBA==?shop=zylisskitchen.myshopify.com",
+          "timestamp": "2025-05-09T15:33:18.818561"
+        },
+        {
+          "url": "http://www.zyliss.com",
+          "message": "Timeout waiting for network idle",
+          "timestamp": "2025-05-09T15:33:18.818564"
+        }
+      ]
+    }
+  },
+  "failed_urls": [],
+  "successful_urls": [
+    "http://www.zyschka.de",
+    "http://www.zyliss.com",
+    "http://www.zwt-zisterer.de",
+    "http://www.zwilling.com",
+    "http://www.zwieg.de",
+    "http://www.zwicky.swiss"
+  ],
+  "performance": {
+    "total_duration": 42.792497,
+    "average_time_per_url": 7.13,
+    "start_time": "2025-05-09T15:32:46.241169",
+    "end_time": "2025-05-09T15:33:29.033666"
+  },
+  "content_metrics": {
+    "total_urls_processed": 6,
+    "successful_scrapes": 6,
+    "failed_scrapes": 0,
+    "success_rate": 100.0
+  }
+}

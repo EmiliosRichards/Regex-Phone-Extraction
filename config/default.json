@@ -1,0 +1,21 @@
+{
+  "data": {
+    "raw_dir": "data/raw",
+    "processed_dir": "data/processed",
+    "results_dir": "data/results"
+  },
+  "logging": {
+    "level": "INFO",
+    "format": "%(asctime)s - %(name)s - %(levelname)s - %(message)s",
+    "file_pattern": "logs/processing_{timestamp}.log"
+  },
+  "phone_extraction": {
+    "min_digits": 8,
+    "max_digits": 15,
+    "validate_numbers": true
+  },
+  "file_handling": {
+    "preserve_original": true,
+    "create_backups": false
+  }
+}
