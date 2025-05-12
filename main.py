@@ -56,9 +56,13 @@ def run_normalization(args):
         logger.error(f"Error during normalization: {str(e)}")
         return None
 
-def run_extraction(args, scraping_dir=None):
+def run_extraction(args, scraping_dir=None, use_twilio_validation=False):
     """Run the phone number extraction step."""
     logger.info("Starting phone number extraction...")
+    if use_twilio_validation:
+        logger.info("Twilio validation is ENABLED.")
+    else:
+        logger.info("Twilio validation is DISABLED.")
     
     try:
         # Determine the scraping directory to process
@@ -90,8 +94,9 @@ def run_extraction(args, scraping_dir=None):
             
             if i % 10 == 0:
                 logger.info(f"Processing website {i+1}/{len(website_dirs)}...")
-                
-            result = process_website_directory(website_dir)
+
+            # Pass the use_twilio_validation flag to process_website_directory
+            result = process_website_directory(website_dir, use_twilio_validation=use_twilio_validation)
             if result:
                 if 'error' in result:
                     errors.append({
@@ -180,7 +185,8 @@ def main():
     parser.add_argument('--skip-normalize', action='store_true', help='Skip the normalization step')
     parser.add_argument('--skip-extract', action='store_true', help='Skip the extraction step')
     parser.add_argument('--skip-analyze', action='store_true', help='Skip the analysis step')
-    
+    parser.add_argument('--use-twilio', action='store_true', help='Enable Twilio API for phone number validation (requires .env setup)')
+
     args = parser.parse_args()
     
     try:
@@ -205,7 +211,8 @@ def main():
         extraction_stats = None
         output_files = None
         if not args.skip_extract:
-            extraction_stats, output_files = run_extraction(args)
+            # Pass the use_twilio flag to run_extraction
+            extraction_stats, output_files = run_extraction(args, use_twilio_validation=args.use_twilio)
             if extraction_stats is None:
                 logger.error("Extraction failed. Exiting pipeline.")
                 return 1

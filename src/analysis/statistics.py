@@ -34,24 +34,29 @@ def generate_statistics(results: List[Dict[str, Any]]) -> Dict[str, Any]:
             stats['websites_with_numbers'] += 1
             stats['total_numbers_found'] += len(website_result['numbers'])
             
-            # Count formats and country codes
+            # Count country codes
             for number in website_result['numbers']:
-                stats['format_counts'][number['format']] += 1
-                
-                # Extract country code if present
-                if number['cleaned'].startswith('+'):
+                # Format counting removed as 'format' key is not directly available from extractor
+                # stats['format_counts'][number['format']] += 1 # Removed this line
+
+                # Extract country code if present (using e164 format)
+                e164_number = number.get('e164', '') # Use .get for safety
+                if e164_number.startswith('+'):
                     # Country codes can be 1, 2, or 3 digits
                     # Common country codes: +1 (US/Canada), +44 (UK), +49 (Germany), etc.
-                    if number['cleaned'].startswith('+1'):
+                    if e164_number.startswith('+1'):
                         country_code = '1'  # North America
-                    elif len(number['cleaned']) > 3 and number['cleaned'][1:3].isdigit():
+                    elif len(e164_number) > 3 and e164_number[1:3].isdigit():
                         # For other country codes, extract the first 2 digits if they form a valid country code
-                        country_code = number['cleaned'][1:3]
+                        country_code = e164_number[1:3]
+                    elif len(e164_number) > 2 and e164_number[1:2].isdigit(): # Check length before fallback
+                        # Fallback for single-digit country codes (less common)
+                        country_code = e164_number[1:2]
                     else:
-                        # Fallback
-                        country_code = number['cleaned'][1:2]
-                        
-                    stats['country_codes'][country_code] += 1
+                        country_code = None # Could not determine code
+
+                    if country_code:
+                        stats['country_codes'][country_code] += 1
     
     # Convert defaultdicts to regular dicts for JSON serialization
     stats['format_counts'] = dict(stats['format_counts'])
@@ -93,8 +98,10 @@ def save_results(stats: Dict[str, Any], timestamp: str = None, output_dir: str =
             if result.get('numbers', []):
                 f.write(f"\n{result['website']}:\n")
                 for number in result['numbers']:
-                    f.write(f"  {number['formatted']}\n")
-    
+                    # Use 'e164' key as 'formatted' is not available
+                    e164_num = number.get('e164', 'N/A') # Use .get for safety
+                    f.write(f"  {e164_num}\n")
+
     # Save statistics summary
     stats_file = results_dir / "statistics.json"
     stats_summary = {k: v for k, v in stats.items() if k != 'results'}

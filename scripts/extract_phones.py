@@ -18,7 +18,7 @@ from src.phone.extractor import extract_phone_numbers
 from src.phone.formatter import format_phone_number
 from src.analysis.statistics import generate_statistics, save_results, print_statistics
 
-def process_website_directory(website_dir):
+def process_website_directory(website_dir, use_twilio_validation=False):
     """Process a single website directory and extract phone numbers."""
     text_file = website_dir / "text.txt"
     if not text_file.exists():
@@ -32,22 +32,13 @@ def process_website_directory(website_dir):
             text = f.read()
         normalized_text = normalize_and_clean(text)
         
-        # Extract phone numbers
-        numbers = extract_phone_numbers(normalized_text)
-        
-        # Format the numbers
-        formatted_numbers = []
-        for number in numbers:
-            formatted_numbers.append({
-                'format': number['format'],
-                'original': number['original'],
-                'cleaned': number['cleaned'],
-                'formatted': format_phone_number(number['cleaned'], number['format'])
-            })
-        
+        # Extract phone numbers, passing the Twilio flag
+        numbers = extract_phone_numbers(normalized_text, use_twilio=use_twilio_validation)
+
+        # No need for extra formatting here, extractor provides necessary info
         return {
             'website': website_name,
-            'numbers': formatted_numbers
+            'numbers': numbers # Return the numbers directly from the extractor
         }
     
     except Exception as e:

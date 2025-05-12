@@ -96,7 +96,9 @@ def validate_phone_number_twilio(phone_number_e164: str) -> dict:
         # Using Lookup V2 API - requires fields parameter
         # Common useful fields: line_type_intelligence, carrier_info
         # For more advanced checks (may incur extra cost): sim_swap, call_forwarding, live_activity
-        lookup_fields = ["line_type_intelligence", "carrier_info"]
+        # 'carrier_info' is not a valid top-level field for V2, it's often part of default or caller_name.
+        # Requesting only 'line_type_intelligence' as it's explicitly valid.
+        lookup_fields = ["line_type_intelligence"]
         phone_info = twilio_client.lookups.v2 \
                                    .phone_numbers(phone_number_e164) \
                                    .fetch(fields=",".join(lookup_fields))

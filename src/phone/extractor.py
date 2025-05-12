@@ -127,14 +127,16 @@ def is_valid_phone_number(
         return False
 
 
-def extract_phone_numbers(text: str, default_region: str = 'DE') -> List[Dict[str, Any]]:
+def extract_phone_numbers(text: str, default_region: str = 'DE', use_twilio: bool = False) -> List[Dict[str, Any]]:
     """
     Extract, validate, and classify phone numbers from text using the phonenumbers library.
+    Optionally uses Twilio for further validation if use_twilio is True.
 
     Args:
         text: Input text string.
         default_region: The default region (e.g., 'DE', 'US') to assume for numbers
                         that are not in international E.164 format. Helps parsing ambiguity.
+        use_twilio: If True, attempt to validate numbers using Twilio API.
 
     Returns:
         List of dictionaries, each containing:
@@ -181,9 +183,20 @@ def extract_phone_numbers(text: str, default_region: str = 'DE') -> List[Dict[st
                         region_code = phonenumbers.region_code_for_number(parsed_num)
                         is_priority = region_code in PRIORITY_REGIONS
 
-                        # --- Call External Validation API ---
-                        api_validation_result = validate_phone_number_twilio(e164_format)
-                        # ------------------------------------
+                        api_validation_result = {}
+                        if use_twilio:
+                            # --- Call External Validation API ---
+                            api_validation_result = validate_phone_number_twilio(e164_format)
+                            # ------------------------------------
+                        else:
+                            # Populate with default "not_attempted" status if Twilio is skipped
+                            api_validation_result = {
+                                "original_number": e164_format,
+                                "is_valid": None,
+                                "api_status": "not_attempted",
+                                "error_message": "Twilio validation skipped by user.",
+                                "details": {}
+                            }
 
                         found_numbers.append({
                             'original': number_str,

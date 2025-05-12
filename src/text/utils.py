@@ -26,9 +26,12 @@ def normalize_text(text: Union[str, bytes], encoding: Optional[str] = None) -> s
     if encoding is None:
         result = chardet.detect(text)
         encoding = result['encoding']
-    
+        # Fallback if chardet fails to detect encoding
+        if encoding is None:
+            encoding = 'utf-8'
+
     try:
-        # Try to decode with detected/specified encoding
+        # Try to decode with detected/specified/fallback encoding
         decoded = text.decode(encoding)
     except (UnicodeDecodeError, LookupError):
         # Fallback to UTF-8 with replacement
