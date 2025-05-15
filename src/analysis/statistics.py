@@ -34,13 +34,36 @@ def generate_statistics(results: List[Dict[str, Any]]) -> Dict[str, Any]:
             stats['websites_with_numbers'] += 1
             stats['total_numbers_found'] += len(website_result['numbers'])
             
-            # Count country codes
+            # Count country codes and formats
             for number in website_result['numbers']:
-                # Format counting removed as 'format' key is not directly available from extractor
-                # stats['format_counts'][number['format']] += 1 # Removed this line
+                # Handle format counting based on available data
+                # If 'format' key exists, use it directly
+                if 'format' in number:
+                    stats['format_counts'][number['format']] += 1
+                # Otherwise, infer format from the structure or region
+                elif 'region' in number:
+                    region = number.get('region', 'unknown')
+                    if region == 'US':
+                        stats['format_counts']['international'] += 1
+                    elif region in ['DE', 'AT', 'CH']:
+                        stats['format_counts']['german'] += 1
+                    else:
+                        stats['format_counts']['international'] += 1
+                # Fallback if no region info
+                else:
+                    original = number.get('original', '')
+                    if original.startswith('+'):
+                        stats['format_counts']['international'] += 1
+                    else:
+                        stats['format_counts']['local'] += 1
 
-                # Extract country code if present (using e164 format)
-                e164_number = number.get('e164', '') # Use .get for safety
+                # Extract country code if present
+                # First check if there's a cleaned or e164 format
+                e164_number = number.get('e164', '') or number.get('cleaned', '')
+                
+                # Also check for formatted field which might contain the country code
+                formatted = number.get('formatted', '')
+                
                 if e164_number.startswith('+'):
                     # Country codes can be 1, 2, or 3 digits
                     # Common country codes: +1 (US/Canada), +44 (UK), +49 (Germany), etc.
@@ -54,9 +77,33 @@ def generate_statistics(results: List[Dict[str, Any]]) -> Dict[str, Any]:
                         country_code = e164_number[1:2]
                     else:
                         country_code = None # Could not determine code
+                
+                # If we couldn't extract from e164, try from formatted
+                elif formatted.startswith('+'):
+                    if formatted.startswith('+1'):
+                        country_code = '1'  # North America
+                    elif len(formatted) > 3 and formatted[1:3].isdigit():
+                        country_code = formatted[1:3]
+                    elif len(formatted) > 2 and formatted[1:2].isdigit():
+                        country_code = formatted[1:2]
+                    else:
+                        country_code = None
+                else:
+                    # Try to extract from original if it has a country code
+                    original = number.get('original', '')
+                    if '+' in original:
+                        # Extract the part after + and before space or bracket
+                        import re
+                        match = re.search(r'\+(\d{1,3})', original)
+                        if match:
+                            country_code = match.group(1)
+                        else:
+                            country_code = None
+                    else:
+                        country_code = None
 
-                    if country_code:
-                        stats['country_codes'][country_code] += 1
+                if country_code:
+                    stats['country_codes'][country_code] += 1
     
     # Convert defaultdicts to regular dicts for JSON serialization
     stats['format_counts'] = dict(stats['format_counts'])
@@ -64,54 +111,129 @@ def generate_statistics(results: List[Dict[str, Any]]) -> Dict[str, Any]:
     
     return stats
 
-def save_results(stats: Dict[str, Any], timestamp: str = None, output_dir: str = None) -> Dict[str, str]:
+def save_results(stats_summary: Dict[str, Any], timestamp: str = None, output_dir: str = None) -> Dict[str, str]:
     """
-    Save extraction results to files.
+    Save extraction results and statistics to files.
     
     Args:
-        stats: Dictionary containing statistics and results
-        timestamp: Optional timestamp string (if None, current time will be used)
-        output_dir: Optional output directory (if None, default directory will be used)
+        stats_summary: Dictionary containing aggregated statistics.
+        timestamp: Optional timestamp string (if None, current time will be used).
+        output_dir: Optional output directory (if None, default 'data/results' will be used).
         
     Returns:
-        Dictionary containing paths to the saved files
+        Dictionary containing paths to the saved files.
     """
     if timestamp is None:
+        # This ensures timestamp string is created if not passed
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
     
+    # Convert the string timestamp (either passed or generated) to a formatted string for the report
+    try:
+        report_dt_obj = datetime.strptime(timestamp, "%Y%m%d_%H%M%S")
+        report_time_str = report_dt_obj.strftime('%Y-%m-%d %H:%M:%S')
+    except ValueError:
+        # Fallback if the timestamp string is not in the expected format
+        report_time_str = "Timestamp N/A"
+
     # Use custom output directory or default
-    base_dir = output_dir or os.environ.get('RESULTS_DIR', "data/results")
+    base_dir = Path(output_dir or os.environ.get('RESULTS_DIR', "data/results"))
     
     # Create results directory if it doesn't exist
-    results_dir = Path(f"{base_dir}/{timestamp}")
+    results_dir = base_dir / timestamp
     results_dir.mkdir(parents=True, exist_ok=True)
     
-    # Save detailed JSON results
-    json_file = results_dir / "phone_numbers.json"
-    with open(json_file, 'w', encoding='utf-8') as f:
-        json.dump(stats, f, indent=2, ensure_ascii=False)
+    # Extract 'results' from stats_summary. This modifies stats_summary in-place.
+    all_extracted_numbers = stats_summary.pop('results', [])
     
-    # Create a simple text file with website names and numbers
-    text_file = results_dir / "phone_numbers.txt"
+    # Create a copy of the modified stats_summary for the JSON file, then add 'results' back.
+    json_data = stats_summary.copy()
+    json_data['results'] = all_extracted_numbers # Add results back for the comprehensive data.json
+    
+    # Save all extracted phone numbers and full data to data.json
+    json_file = results_dir / "data.json"
+    with open(json_file, 'w', encoding='utf-8') as f:
+        json.dump(json_data, f, indent=2, ensure_ascii=False)
+    
+    # phone_numbers.json and statistics.json are no longer created as per plan.
+    # data.json contains all necessary information.
+    
+    # Save text report
+    text_file = results_dir / "report.txt"
     with open(text_file, 'w', encoding='utf-8') as f:
-        for result in stats['results']:
-            if result.get('numbers', []):
-                f.write(f"\n{result['website']}:\n")
-                for number in result['numbers']:
-                    # Use 'e164' key as 'formatted' is not available
-                    e164_num = number.get('e164', 'N/A') # Use .get for safety
-                    f.write(f"  {e164_num}\n")
+        f.write("=== Phone Number Detection Report ===\n")
+        f.write(f"Generated: {report_time_str}\n\n")
 
-    # Save statistics summary
-    stats_file = results_dir / "statistics.json"
-    stats_summary = {k: v for k, v in stats.items() if k != 'results'}
-    with open(stats_file, 'w', encoding='utf-8') as f:
-        json.dump(stats_summary, f, indent=2, ensure_ascii=False)
+        f.write("Overall Summary\n")
+        f.write("-----------------\n")
+        f.write(f"Total websites processed: {stats_summary.get('total_websites', 0)}\n")
+        f.write(f"Websites with phone numbers: {stats_summary.get('websites_with_numbers', 0)}\n")
+        f.write(f"Total phone numbers found: {stats_summary.get('total_numbers_found', 0)}\n\n")
+
+        f.write("Extraction Metrics\n")
+        f.write("------------------\n")
+        if stats_summary.get('country_codes'):
+            f.write("Country Code Counts:\n")
+            for code, count in sorted(stats_summary['country_codes'].items()):
+                f.write(f"  +{code}: {count}\n")
+        else:
+            f.write("Country Code Counts: None\n")
+        f.write("\n")
+
+        if stats_summary.get('format_counts'):
+            f.write("Number Format Counts:\n")
+            for fmt, count in sorted(stats_summary['format_counts'].items()):
+                f.write(f"  {fmt}: {count}\n")
+        else:
+            f.write("Number Format Counts: None\n")
+        f.write("\n")
+
+        f.write("Detailed Results by Website\n")
+        f.write("---------------------------\n")
+        if all_extracted_numbers:
+            for website_result in all_extracted_numbers:
+                f.write(f"Website: {website_result.get('website', 'Unknown Website')}\n")
+                numbers = website_result.get('numbers', [])
+                if numbers:
+                    f.write("  Extracted Numbers:\n")
+                    for number_obj in numbers:
+                        e164 = number_obj.get('extraction_details', {}).get('e164')
+                        original = number_obj.get('extraction_details', {}).get('original')
+                        phone_num_top = number_obj.get('phone_number')
+
+                        display_num = "Number data missing"
+                        original_text_display = ""
+
+                        if e164:
+                            display_num = e164
+                            if original and original != e164: # Show original only if different and present
+                                original_text_display = f" (Original: {original})"
+                        elif original:
+                            display_num = original
+                        elif phone_num_top:
+                            display_num = phone_num_top
+                        
+                        f.write(f"    - {display_num}{original_text_display}\n")
+                else:
+                    f.write("  No phone numbers found\n")
+                f.write("\n")
+        else:
+            f.write("No website data processed or no numbers found in any website.\n\n")
+
+        f.write("Processing Errors (if any)\n")
+        f.write("--------------------------\n")
+        errors = stats_summary.get('errors', [])
+        actual_errors = [e for e in errors if e.get('error')]
+        if actual_errors:
+            for error_entry in actual_errors:
+                f.write(f"  {error_entry.get('website', 'Unknown Website')}: {error_entry.get('error', 'No error message')}\n")
+        else:
+            f.write("  No errors reported.\n")
+        f.write("\n")
     
     return {
-        'json': str(json_file),
         'text': str(text_file),
-        'stats': str(stats_file)
+        'json': str(json_file),  # data.json now contains all statistics and results
+        'stats': str(json_file)   # Point 'stats' to data.json as it's the comprehensive file
     }
 
 def print_statistics(stats: Dict[str, Any]) -> None:

@@ -2,8 +2,8 @@ import pytest
 from unittest.mock import MagicMock, patch
 from twilio.base.exceptions import TwilioRestException
 
-# Import the function to test
-from src.phone.validator import validate_phone_number_twilio, twilio_client as validator_twilio_client
+# Import the function and variables to test
+from src.phone.validator import validate_phone_number_twilio, twilio_client as validator_twilio_client, TWILIO_AVAILABLE
 
 # Define mock responses for Twilio Lookup V2 API
 # Successful response structure (adapt based on actual V2 fields needed)
@@ -36,14 +36,10 @@ def mock_twilio_client(mocker):
     # Mock the client instance directly within the validator module
     mock_client = MagicMock()
     mocker.patch('src.phone.validator.twilio_client', mock_client)
-    # Ensure the validator thinks the client is initialized
+    # Ensure the validator thinks the client is initialized and available
     mocker.patch('src.phone.validator.TWILIO_ACCOUNT_SID', 'ACxxxxxxxx MOCKED xxxxxxxxxxxx')
     mocker.patch('src.phone.validator.TWILIO_AUTH_TOKEN', 'xxxxxxxx MOCKED xxxxxxxx')
-    # Re-assign the mocked client to the validator's global scope if needed,
-    # but patching should be sufficient if the function uses the global directly.
-    # If the function re-imports or re-initializes, this might need adjustment.
-    # For safety, let's also patch the global reference if tests fail otherwise.
-    # mocker.patch.object(validator_twilio_client.__class__, '__bool__', return_value=True) # Make it truthy - REMOVED: MagicMock is truthy by default and this caused errors when validator_twilio_client was None.
+    mocker.patch('src.phone.validator.TWILIO_AVAILABLE', True)
 
     return mock_client # Return the mock for specific test adjustments if needed
 
@@ -90,7 +86,7 @@ def test_validate_api_error(mock_twilio_client):
 
     assert result['original_number'] == test_number
     assert result['api_status'] == 'failed'
-    assert result['is_valid'] is False # Treat API errors as invalid
+    assert result['is_valid'] is None # API errors now return None instead of False
     assert 'Twilio API Error' in result['error_message']
     assert 'Status=404' in result['error_message']
     assert 'Code=20404' in result['error_message']
@@ -124,22 +120,29 @@ def test_validate_empty_input(mock_twilio_client):
     assert result['details'] == {}
     mock_twilio_client.lookups.v2.phone_numbers().fetch.assert_not_called()
 
-@patch('src.phone.validator.twilio_client', None) # Simulate client not initialized
+@patch('src.phone.validator.TWILIO_AVAILABLE', False)
 def test_validate_twilio_client_not_initialized():
     """Test behavior when Twilio client failed to initialize (e.g., missing creds)."""
     test_number = "+15108675309"
 
-    # Need to reload the module or patch the global 'twilio_client' used by the function
-    # Patching directly where it's used is often cleaner.
-    # The patch decorator handles this for the duration of the test.
+    result = validate_phone_number_twilio(test_number)
+
+    assert result['original_number'] == test_number
+    assert result['api_status'] == 'skipped'
+    assert result['is_valid'] is True  # We assume valid when Twilio is not available
+    assert 'Twilio validation skipped' in result['error_message']
+    assert result['details'] == {}
+
+def test_validate_api_error_handling(mock_twilio_client):
+    """Test that API errors don't automatically mark numbers as invalid."""
+    test_number = "+1234567890"
+    # Configure the mock client's fetch method to raise an exception
+    mock_twilio_client.lookups.v2.phone_numbers(test_number).fetch.side_effect = MOCK_API_ERROR
 
     result = validate_phone_number_twilio(test_number)
 
     assert result['original_number'] == test_number
     assert result['api_status'] == 'failed'
-    assert result['is_valid'] is None # Validity is unknown if API wasn't called
-    assert 'Twilio client not initialized' in result['error_message']
+    assert result['is_valid'] is None  # Should be None, not False
+    assert 'Twilio API Error' in result['error_message']
     assert result['details'] == {}
-
-# TODO: Add tests for logging if specific log messages need verification,
-# potentially using pytest's caplog fixture.

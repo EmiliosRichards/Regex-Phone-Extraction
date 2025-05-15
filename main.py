@@ -28,6 +28,7 @@ from src.text.utils import normalize_and_clean
 from src.phone.extractor import extract_phone_numbers
 from src.phone.formatter import format_phone_number
 from src.analysis.statistics import generate_statistics, save_results, print_statistics
+from scripts.export_phone_numbers_to_excel import generate_phone_numbers_excel_report
 
 def run_normalization(args):
     """Run the text normalization step."""
@@ -106,12 +107,31 @@ def run_extraction(args, scraping_dir=None, use_twilio_validation=False):
                 results.append(result)
         
         # Generate statistics
-        stats = generate_statistics(results)
+        stats = generate_statistics(results) # 'results' here is a list of dicts, potentially with datetime objects
         stats['errors'] = errors
         
+        # Convert datetime objects in stats['results'] before saving
+        # This is crucial because generate_statistics simply passes the 'results' list along.
+        if 'results' in stats and isinstance(stats['results'], list):
+            for website_result in stats['results']:
+                # Each website_result is a dictionary that might come from process_website_directory
+                # It might contain 'numbers', and each number dict might have 'scrape_run_timestamp'
+                if 'numbers' in website_result and isinstance(website_result['numbers'], list):
+                    for number_entry in website_result['numbers']:
+                        if isinstance(number_entry, dict) and \
+                           "scrape_run_timestamp" in number_entry and \
+                           isinstance(number_entry["scrape_run_timestamp"], datetime):
+                            number_entry["scrape_run_timestamp"] = number_entry["scrape_run_timestamp"].isoformat()
+                # Also, the top-level website_result itself might have a timestamp if added by process_website_directory
+                # However, based on current process_website_directory, timestamps are inside the 'numbers' list items.
+                # If process_website_directory were to add a 'scrape_run_timestamp' to its direct output, handle here:
+                # if "scrape_run_timestamp" in website_result and isinstance(website_result["scrape_run_timestamp"], datetime):
+                #     website_result["scrape_run_timestamp"] = website_result["scrape_run_timestamp"].isoformat()
+
+
         # Save results
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        output_files = save_results(stats, timestamp)
+        timestamp_str = datetime.now().strftime("%Y%m%d_%H%M%S") # Renamed to avoid conflict with datetime module
+        output_files = save_results(stats, timestamp_str) # stats should now be serializable
         
         logger.info(f"Extraction complete. Found {stats['total_numbers_found']} phone numbers in {stats['websites_with_numbers']} websites.")
         logger.info(f"Results saved to: {output_files['json']}")
@@ -218,8 +238,25 @@ def main():
                 return 1
         else:
             logger.info("Skipping extraction step.")
-        
-        # Step 3: Analyze results
+
+        # Step 3: Generate Excel Report (after successful extraction)
+        if not args.skip_extract and extraction_stats is not None: # Only run if extraction was attempted and successful
+            logger.info("Starting Excel report generation...")
+            try:
+                report_path = generate_phone_numbers_excel_report()
+                if report_path:
+                    logger.info(f"Excel report generated successfully: {report_path}")
+                else:
+                    logger.warning("Excel report generation did not produce a file path, but no error was raised.")
+            except Exception as report_err:
+                logger.error(f"Failed to generate Excel report: {report_err}", exc_info=True)
+                # Do not exit pipeline, just log the error
+        elif args.skip_extract:
+            logger.info("Skipping Excel report generation because extraction was skipped.")
+        else: # extraction_stats is None, meaning extraction failed
+            logger.info("Skipping Excel report generation because extraction failed.")
+
+        # Step 4: Analyze results
         if not args.skip_analyze:
             results_file = args.file
             if output_files and 'json' in output_files:

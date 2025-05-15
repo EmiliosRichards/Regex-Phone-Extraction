@@ -5,6 +5,10 @@ import chardet
 import unicodedata
 import re
 from typing import Union, Optional
+from src.utils.logging_config import get_logger
+
+# Get logger for this module
+log = get_logger(__name__)
 
 def normalize_text(text: Union[str, bytes], encoding: Optional[str] = None) -> str:
     """
@@ -28,12 +32,16 @@ def normalize_text(text: Union[str, bytes], encoding: Optional[str] = None) -> s
         encoding = result['encoding']
         # Fallback if chardet fails to detect encoding
         if encoding is None:
+            log.warning("Failed to detect encoding, falling back to utf-8")
             encoding = 'utf-8'
+        else:
+            log.debug(f"Detected encoding: {encoding} with confidence: {result['confidence']}")
 
     try:
         # Try to decode with detected/specified/fallback encoding
         decoded = text.decode(encoding)
-    except (UnicodeDecodeError, LookupError):
+    except (UnicodeDecodeError, LookupError) as e:
+        log.warning(f"Failed to decode with {encoding}: {e}. Falling back to utf-8 with replacement.")
         # Fallback to UTF-8 with replacement
         decoded = text.decode('utf-8', errors='replace')
     
@@ -99,5 +107,18 @@ def normalize_and_clean(text: Union[str, bytes], encoding: Optional[str] = None)
     Returns:
         Normalized and cleaned text as UTF-8 string
     """
-    normalized = normalize_text(text, encoding)
-    return clean_text(normalized)
+    try:
+        normalized = normalize_text(text, encoding)
+        cleaned = clean_text(normalized)
+        return cleaned
+    except Exception as e:
+        log.error(f"Error in normalize_and_clean: {e}", exc_info=True)
+        # Return a safe fallback if possible
+        if isinstance(text, str):
+            return text
+        elif isinstance(text, bytes):
+            try:
+                return text.decode('utf-8', errors='replace')
+            except:
+                return ""
+        return ""

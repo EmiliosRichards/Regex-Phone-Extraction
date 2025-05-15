@@ -4,6 +4,9 @@ pathlib>=1.0.1
 phonenumbers>=8.13.0
 twilio>=7.0.0 # For phone number validation via Twilio Lookup API
 python-dotenv>=0.20.0 # For loading environment variables from .env file
+psycopg2-binary>=2.9.0 # For PostgreSQL database interaction
+pandas>=1.0.0 # For data manipulation and Excel export
+openpyxl>=3.0.0 # For writing .xlsx files with pandas
 
 # Development dependencies
 pytest>=7.0.0

@@ -137,10 +137,18 @@ class TestFileProcessing(unittest.TestCase):
         backup_file = self.text_file.with_suffix('.txt.bak')
         self.assertTrue(backup_file.exists())
         
-        # Check that the original file was updated
+        # Check that the original file was NOT updated (preserved)
         with open(self.text_file, 'r', encoding='utf-8') as f:
             content = f.read()
-        self.assertEqual(content, "Phone: 123 456 7890 with unicode: é, ü, ñ")
+        self.assertEqual(content, "Phone: 123-456-7890 with unicode: é, ü, ñ")
+        
+        # Check that the processed file was created with normalized content
+        timestamp = self.test_dir.name
+        processed_file = Path(output_dir) / timestamp / "pages" / "example_com" / "text.txt"
+        self.assertTrue(processed_file.exists())
+        with open(processed_file, 'r', encoding='utf-8') as f:
+            processed_content = f.read()
+        self.assertEqual(processed_content, "Phone: 123 456 7890 with unicode: é, ü, ñ")
 
 if __name__ == '__main__':
     unittest.main()
